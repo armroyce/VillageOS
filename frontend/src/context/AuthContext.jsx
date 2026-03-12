@@ -23,14 +23,17 @@ export function AuthProvider({ children }) {
     const endpoint = isSuperAdmin ? '/auth/super-admin/login' : '/auth/login';
     const payload = isSuperAdmin ? { email, password } : { email, password, village_id: villageIdOrSubdomain };
     const { data } = await api.post(endpoint, payload);
+    const user = isSuperAdmin
+      ? { ...data.data.user, is_super_admin: true }
+      : data.data.user;
     localStorage.setItem('token', data.data.token);
-    localStorage.setItem('user', JSON.stringify(data.data.user));
+    localStorage.setItem('user', JSON.stringify(user));
     if (data.data.village) {
       localStorage.setItem('village', JSON.stringify(data.data.village));
       localStorage.setItem('village_id', data.data.village.id);
       setVillage(data.data.village);
     }
-    setUser(data.data.user);
+    setUser(user);
     return data.data;
   }
 
