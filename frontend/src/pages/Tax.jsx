@@ -64,7 +64,9 @@ function AssignTaxForm({ onDone }) {
       toast.success(`Assigned to ${res.data.data.assigned} families`);
       onDone();
     } catch (err) {
-      toast.error(err.response?.data?.error?.message || 'Error');
+      const msg = err.response?.data?.error?.message || err.message || 'Error';
+      const status = err.response?.status ? ` (${err.response.status})` : '';
+      toast.error(msg + status);
     } finally { setSaving(false); }
   }
 
@@ -229,18 +231,19 @@ export default function Tax() {
     setLoading(true);
     try {
       const [taxRes, sumRes, duesRes, assignRes] = await Promise.all([
-        api.get('/tax', { params: { page } }),
-        api.get('/tax/summary'),
-        api.get('/tax/dues'),
-        api.get('/tax/assignments'),
+        api.get('/tax', { params: { page } }).catch(() => ({ data: { data: [], pagination: { page: 1, pages: 1 } } })),
+        api.get('/tax/summary').catch(() => ({ data: { data: [] } })),
+        api.get('/tax/dues').catch(() => ({ data: { data: [] } })),
+        api.get('/tax/assignments').catch(() => ({ data: { data: [] } })),
       ]);
       setData(taxRes.data.data);
       setPagination(taxRes.data.pagination || { page: 1, pages: 1 });
       setSummary(sumRes.data.data);
       setDues(duesRes.data.data);
       setAssignments(assignRes.data.data);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.error('Tax load error:', err);
+    } finally { setLoading(false); }
   }
 
   useEffect(() => { load(); }, []);

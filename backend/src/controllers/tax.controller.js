@@ -104,8 +104,8 @@ async function getAssignmentStatus(req, res) {
     const description = decodeURIComponent(req.params.description);
     const rows = await TaxLedger.findAll({
       where: { description },
-      include: [{ model: Family, as: 'family', attributes: ['id', 'family_head_name', 'ward_number', 'phone_number'] }],
-      order: [['status', 'ASC'], [Family, 'ward_number', 'ASC']],
+      include: [{ model: Family, as: 'family', attributes: ['id', 'family_name', 'family_head_name', 'ward_number', 'phone_number'] }],
+      order: [['status', 'ASC']],
     });
     return success(res, rows);
   } catch (err) {
