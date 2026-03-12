@@ -97,7 +97,7 @@ function defineTenantModels(sequelize) {
   Member.belongsTo(Family, { foreignKey: 'family_id' });
 
   Family.hasMany(TaxLedger, { foreignKey: 'family_id', as: 'taxes' });
-  TaxLedger.belongsTo(Family, { foreignKey: 'family_id' });
+  TaxLedger.belongsTo(Family, { foreignKey: 'family_id', as: 'family' });
 
   Expense.hasMany(Approval, { foreignKey: 'expense_id', as: 'approvals' });
   Approval.belongsTo(Expense, { foreignKey: 'expense_id' });
