@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export default function FamilyNew() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ family_head_name: '', address: '', ward_number: '' });
+  const [form, setForm] = useState({ family_head_name: '', address: '', ward_number: '', phone_number: '' });
   const [errors, setErrors] = useState({});
 
   async function handleSubmit(e) {
@@ -39,6 +39,10 @@ export default function FamilyNew() {
           <div>
             <label className="block text-sm font-medium mb-1">{t('address')}</label>
             <textarea className="input" rows={3} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Phone Number <span className="text-slate-400 font-normal">(optional)</span></label>
+            <input className="input" type="tel" placeholder="e.g. 9876543210" value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value })} />
           </div>
           <div className="flex gap-3">
             <button type="submit" className="btn-primary">{t('save')}</button>

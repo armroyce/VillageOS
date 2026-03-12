@@ -28,8 +28,42 @@ export default function FamilyDetail() {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div><span className="text-slate-500">{t('ward')}</span><p className="font-medium">{family.ward_number || '—'}</p></div>
           <div><span className="text-slate-500">{t('address')}</span><p className="font-medium">{family.address || '—'}</p></div>
+          <div><span className="text-slate-500">Phone</span><p className="font-medium">{family.phone_number || '—'}</p></div>
+          <div>
+            <span className="text-slate-500">Tax Status</span>
+            <p className="font-medium mt-1">
+              {family.total_due > 0
+                ? <span className="badge-red">₹{parseFloat(family.total_due).toFixed(0)} pending</span>
+                : <span className="badge-green">All clear</span>}
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Pending Dues */}
+      {family.pending_dues?.length > 0 && (
+        <div className="card border-l-4 border-red-400">
+          <h2 className="font-semibold mb-3 text-red-600">Pending Tax Dues ({family.pending_dues.length})</h2>
+          <table className="w-full text-sm">
+            <thead><tr className="border-b">
+              <th className="text-left py-2 font-medium text-slate-600">Description</th>
+              <th className="text-left py-2 font-medium text-slate-600">Type</th>
+              <th className="text-left py-2 font-medium text-slate-600">Amount</th>
+              <th className="text-left py-2 font-medium text-slate-600">Due Date</th>
+            </tr></thead>
+            <tbody>
+              {family.pending_dues.map((d) => (
+                <tr key={d.id} className="border-b border-slate-100">
+                  <td className="py-2">{d.description || '—'}</td>
+                  <td className="py-2"><span className={d.type === 'house_tax' ? 'badge-green' : 'badge-yellow'}>{t(d.type)}</span></td>
+                  <td className="py-2 font-semibold text-red-600">₹{parseFloat(d.amount).toFixed(0)}</td>
+                  <td className="py-2 text-slate-500">{new Date(d.collectedAt || d.collected_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="card">
         <div className="flex items-center justify-between mb-4">

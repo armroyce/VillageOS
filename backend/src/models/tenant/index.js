@@ -28,6 +28,7 @@ function defineTenantModels(sequelize) {
     family_head_name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.TEXT },
     ward_number: { type: DataTypes.STRING },
+    phone_number: { type: DataTypes.STRING(15) },
     created_by: { type: DataTypes.UUID },
   }, { tableName: 'families', timestamps: true, underscored: true });
 
@@ -51,6 +52,7 @@ function defineTenantModels(sequelize) {
     collected_by: { type: DataTypes.UUID },
     receipt_number: { type: DataTypes.STRING, unique: true },
     collected_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    description: { type: DataTypes.STRING },  // labels the assignment e.g. "House Tax 2026"
   }, { tableName: 'tax_ledger', timestamps: false, underscored: true });
 
   const Expense = sequelize.define('Expense', {

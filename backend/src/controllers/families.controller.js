@@ -3,7 +3,7 @@ const { success, error } = require('../utils/response');
 
 async function listFamilies(req, res) {
   try {
-    const { Family, Member } = req.models;
+    const { Family, Member, TaxLedger } = req.models;
     const { page = 1, limit = 20, search, ward } = req.query;
     const offset = (page - 1) * limit;
     const where = {};
@@ -11,12 +11,23 @@ async function listFamilies(req, res) {
     if (ward) where.ward_number = ward;
     const { count, rows } = await Family.findAndCountAll({
       where,
-      include: [{ model: Member, as: 'members' }],
+      include: [
+        { model: Member, as: 'members', attributes: ['id'] },
+        { model: TaxLedger, as: 'taxes', where: { status: 'pending' }, required: false, attributes: ['id', 'amount', 'description', 'type'] },
+      ],
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [['created_at', 'DESC']],
     });
-    return success(res, rows, 'OK', 200, { total: count, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(count / limit) });
+    // Attach dues summary to each family
+    const data = rows.map((f) => {
+      const json = f.toJSON();
+      const pendingDues = json.taxes || [];
+      json.total_due = pendingDues.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      json.dues_count = pendingDues.length;
+      return json;
+    });
+    return success(res, data, 'OK', 200, { total: count, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(count / limit) });
   } catch (err) {
     return error(res, err.message);
   }
@@ -25,9 +36,9 @@ async function listFamilies(req, res) {
 async function createFamily(req, res) {
   try {
     const { Family } = req.models;
-    const { family_head_name, address, ward_number } = req.body;
+    const { family_head_name, address, ward_number, phone_number } = req.body;
     if (!family_head_name) return error(res, 'family_head_name required', 400, 'VALIDATION_ERROR');
-    const family = await Family.create({ family_head_name, address, ward_number, created_by: req.user.user_id });
+    const family = await Family.create({ family_head_name, address, ward_number, phone_number, created_by: req.user.user_id });
     return success(res, family, 'Family created', 201);
   } catch (err) {
     return error(res, err.message);
@@ -36,10 +47,18 @@ async function createFamily(req, res) {
 
 async function getFamily(req, res) {
   try {
-    const { Family, Member } = req.models;
-    const family = await Family.findByPk(req.params.id, { include: [{ model: Member, as: 'members' }] });
+    const { Family, Member, TaxLedger } = req.models;
+    const family = await Family.findByPk(req.params.id, {
+      include: [
+        { model: Member, as: 'members' },
+        { model: TaxLedger, as: 'taxes', order: [['collected_at', 'DESC']] },
+      ],
+    });
     if (!family) return error(res, 'Family not found', 404, 'NOT_FOUND');
-    return success(res, family);
+    const json = family.toJSON();
+    json.pending_dues = (json.taxes || []).filter((t) => t.status === 'pending');
+    json.total_due = json.pending_dues.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    return success(res, json);
   } catch (err) {
     return error(res, err.message);
   }

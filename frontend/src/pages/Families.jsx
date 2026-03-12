@@ -32,19 +32,15 @@ export default function Families() {
   const columns = [
     { key: 'family_head_name', label: t('family_head') },
     { key: 'ward_number', label: t('ward') },
-    { key: 'address', label: t('address') },
+    { key: 'phone_number', label: 'Phone', render: (row) => row.phone_number || '—' },
+    { key: 'members', label: t('members'), render: (row) => <span className="badge-green">{row.members?.length || 0}</span> },
     {
-      key: 'members',
-      label: t('members'),
-      render: (row) => <span className="badge-green">{row.members?.length || 0}</span>,
+      key: 'tax_status', label: 'Tax Due',
+      render: (row) => row.dues_count > 0
+        ? <span className="badge-red">₹{parseFloat(row.total_due).toFixed(0)} due</span>
+        : <span className="badge-green">Clear</span>,
     },
-    {
-      key: 'actions',
-      label: '',
-      render: (row) => (
-        <Link to={`/families/${row.id}`} className="text-primary text-xs hover:underline">View →</Link>
-      ),
-    },
+    { key: 'actions', label: '', render: (row) => <Link to={`/families/${row.id}`} className="text-primary text-xs hover:underline">View →</Link> },
   ];
 
   return (

@@ -66,6 +66,10 @@ router.delete('/members/:id', checkPermission('FAMILY_DELETE'), checkPlan('famil
 // Tax
 router.get('/tax', checkPermission('TAX_VIEW'), taxCtrl.listTax);
 router.post('/tax', checkPermission('TAX_CREATE'), taxCtrl.collectTax);
+router.post('/tax/assign', checkPermission('TAX_CREATE'), taxCtrl.assignTax);
+router.get('/tax/assignments', checkPermission('TAX_VIEW'), taxCtrl.getAssignments);
+router.get('/tax/assignments/:description/status', checkPermission('TAX_VIEW'), taxCtrl.getAssignmentStatus);
+router.get('/tax/family/:familyId/dues', checkPermission('TAX_VIEW'), taxCtrl.getFamilyDues);
 router.get('/tax/receipt/:id', checkPermission('TAX_VIEW'), taxCtrl.getReceipt);
 router.get('/tax/dues', checkPermission('TAX_VIEW'), taxCtrl.getDues);
 router.get('/tax/summary', checkPermission('TAX_VIEW'), taxCtrl.getTaxSummary);

@@ -6,3 +6,8 @@ uploads/*
 *.log
 .DS_Store
 .claude/
+# Sensitive project reference files
+VillageOS_Project_Reference.md
+VillageOS_Project_Reference.docx
+PROJECT_GUIDE.md
+.Rhistory

@@ -9,6 +9,7 @@ headers = []
 publish = "/Users/roycemelwina/VillageOS/frontend/dist"
 publishOrigin = "ui"
 commandOrigin = "ui"
+base = "/Users/roycemelwina/VillageOS/frontend"
 command = "npm run build"
 
 [build.environment]
