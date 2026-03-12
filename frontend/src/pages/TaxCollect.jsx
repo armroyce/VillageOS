@@ -8,7 +8,8 @@ export default function TaxCollect() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [families, setFamilies] = useState([]);
-  const [form, setForm] = useState({ family_id: '', amount: '', type: 'house_tax' });
+  const today = new Date().toISOString().split('T')[0];
+  const [form, setForm] = useState({ family_id: '', amount: '', type: 'house_tax', collected_date: today });
   const [receipt, setReceipt] = useState(null);
 
   useEffect(() => {
@@ -53,6 +54,10 @@ export default function TaxCollect() {
             <div>
               <label className="block text-sm font-medium mb-1">{t('amount')} (₹)</label>
               <input type="number" className="input" value={form.amount} onChange={set('amount')} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{t('date')}</label>
+              <input type="date" className="input" value={form.collected_date} onChange={set('collected_date')} />
             </div>
             <button type="submit" className="btn-primary w-full">{t('collect_tax')}</button>
           </form>

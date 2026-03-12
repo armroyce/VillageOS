@@ -22,10 +22,14 @@ async function listExpenses(req, res) {
 async function createExpense(req, res) {
   try {
     const { Expense } = req.models;
-    const { title, amount, category } = req.body;
+    const { title, amount, category, expense_date } = req.body;
     if (!title || !amount) return error(res, 'title and amount required', 400, 'VALIDATION_ERROR');
     const bill_url = req.file ? `/uploads/${req.file.filename}` : null;
-    const expense = await Expense.create({ title, amount, category, bill_url, created_by: req.user.user_id });
+    const expense = await Expense.create({
+      title, amount, category, bill_url,
+      created_by: req.user.user_id,
+      ...(expense_date && { createdAt: new Date(expense_date) }),
+    });
     return success(res, expense, 'Expense created', 201);
   } catch (err) {
     return error(res, err.message);

@@ -26,7 +26,7 @@ async function listTax(req, res) {
 async function collectTax(req, res) {
   try {
     const { TaxLedger } = req.models;
-    const { family_id, amount, type } = req.body;
+    const { family_id, amount, type, collected_date } = req.body;
     if (!family_id || !amount || !type) return error(res, 'family_id, amount, type required', 400, 'VALIDATION_ERROR');
     const receipt_number = generateReceiptNumber();
     const record = await TaxLedger.create({
@@ -36,7 +36,7 @@ async function collectTax(req, res) {
       status: 'paid',
       collected_by: req.user.user_id,
       receipt_number,
-      collected_at: new Date(),
+      collected_at: collected_date ? new Date(collected_date) : new Date(),
     });
     return success(res, record, 'Tax collected', 201);
   } catch (err) {

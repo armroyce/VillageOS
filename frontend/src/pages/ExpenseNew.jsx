@@ -9,7 +9,8 @@ const CATEGORIES = ['road', 'temple', 'water', 'electricity', 'sanitation', 'edu
 export default function ExpenseNew() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ title: '', amount: '', category: 'road' });
+  const today = new Date().toISOString().split('T')[0];
+  const [form, setForm] = useState({ title: '', amount: '', category: 'road', expense_date: today });
   const [file, setFile] = useState(null);
 
   async function handleSubmit(e) {
@@ -39,6 +40,10 @@ export default function ExpenseNew() {
             <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">{t('date')}</label>
+            <input type="date" className="input" value={form.expense_date} onChange={(e) => setForm({ ...form, expense_date: e.target.value })} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{t('upload_bill')}</label>
