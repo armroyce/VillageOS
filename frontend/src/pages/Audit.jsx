@@ -28,7 +28,7 @@ export default function Audit() {
     { key: 'module', label: t('module') },
     { key: 'user_id', label: 'User ID', render: (r) => <span className="font-mono text-xs">{r.user_id?.slice(0, 8) || '—'}…</span> },
     { key: 'ip', label: t('ip') },
-    { key: 'created_at', label: t('date'), render: (r) => new Date(r.created_at).toLocaleString() },
+    { key: 'createdAt', label: t('date'), render: (r) => new Date(r.createdAt || r.created_at).toLocaleString() },
   ];
 
   return (

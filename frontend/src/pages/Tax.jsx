@@ -38,7 +38,7 @@ export default function Tax() {
     { key: 'type', label: t('type'), render: (r) => <span className={r.type === 'house_tax' ? 'badge-green' : 'badge-yellow'}>{t(r.type)}</span> },
     { key: 'amount', label: t('amount'), render: (r) => `₹${r.amount}` },
     { key: 'status', label: t('status'), render: (r) => <span className="badge-green">{t(r.status)}</span> },
-    { key: 'collected_at', label: t('date'), render: (r) => new Date(r.collected_at).toLocaleDateString() },
+    { key: 'collectedAt', label: t('date'), render: (r) => new Date(r.collectedAt || r.collected_at).toLocaleDateString() },
     {
       key: 'receipt_action', label: '',
       render: (r) => <Link to={`/tax/receipt/${r.id}`} className="text-primary text-xs hover:underline">{t('receipt')}</Link>

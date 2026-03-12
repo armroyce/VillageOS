@@ -47,7 +47,7 @@ export default function Expenses() {
     { key: 'category', label: t('category'), render: (r) => r.category || '—' },
     { key: 'amount', label: t('amount'), render: (r) => `₹${r.amount}` },
     { key: 'status', label: t('status'), render: (r) => statusBadge(r.status) },
-    { key: 'created_at', label: t('date'), render: (r) => new Date(r.created_at).toLocaleDateString() },
+    { key: 'createdAt', label: t('date'), render: (r) => new Date(r.createdAt || r.created_at).toLocaleDateString() },
     {
       key: 'actions', label: '',
       render: (r) => r.status === 'pending' ? (

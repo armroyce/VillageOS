@@ -69,7 +69,7 @@ export default function TaxCollect() {
             <div className="flex justify-between"><span className="text-slate-500">{t('receipt')}</span><span className="font-mono font-bold">{receipt.receipt_number}</span></div>
             <div className="flex justify-between"><span className="text-slate-500">{t('type')}</span><span>{t(receipt.type)}</span></div>
             <div className="flex justify-between"><span className="text-slate-500">{t('amount')}</span><span className="font-bold text-primary">₹{receipt.amount}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">{t('date')}</span><span>{new Date(receipt.collected_at).toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">{t('date')}</span><span>{new Date(receipt.collectedAt || receipt.collected_at).toLocaleString()}</span></div>
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={() => window.print()} className="btn-secondary flex-1">{t('print')}</button>
