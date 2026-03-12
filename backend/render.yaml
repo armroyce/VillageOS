@@ -2,6 +2,7 @@ services:
   - type: web
     name: villageos-api
     env: node
+    autoDeploy: true
     buildCommand: npm install
     startCommand: node src/server.js
     envVars:
