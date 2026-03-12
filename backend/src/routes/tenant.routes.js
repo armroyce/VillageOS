@@ -7,6 +7,7 @@ const verifyJWT = require('../middleware/verifyJWT');
 const resolveTenant = require('../middleware/resolveTenant');
 const connectTenantDB = require('../middleware/connectTenantDB');
 const checkPermission = require('../middleware/checkPermission');
+const checkPlan = require('../middleware/checkPlan');
 
 const roleCtrl = require('../controllers/roles.controller');
 const userCtrl = require('../controllers/users.controller');
@@ -39,14 +40,14 @@ router.get('/config', configCtrl.getTenantConfig);
 
 // Roles
 router.get('/roles', checkPermission('ROLE_VIEW'), roleCtrl.listRoles);
-router.post('/roles', checkPermission('ROLE_MANAGE'), roleCtrl.createRole);
-router.put('/roles/:id', checkPermission('ROLE_MANAGE'), roleCtrl.updateRole);
-router.delete('/roles/:id', checkPermission('ROLE_MANAGE'), roleCtrl.deleteRole);
-router.post('/roles/:id/permissions', checkPermission('ROLE_MANAGE'), roleCtrl.assignPermissions);
+router.post('/roles', checkPermission('ROLE_MANAGE'), checkPlan('custom_roles'), roleCtrl.createRole);
+router.put('/roles/:id', checkPermission('ROLE_MANAGE'), checkPlan('custom_roles'), roleCtrl.updateRole);
+router.delete('/roles/:id', checkPermission('ROLE_MANAGE'), checkPlan('custom_roles'), roleCtrl.deleteRole);
+router.post('/roles/:id/permissions', checkPermission('ROLE_MANAGE'), checkPlan('custom_roles'), roleCtrl.assignPermissions);
 
 // Users
 router.get('/users', checkPermission('USER_VIEW'), userCtrl.listUsers);
-router.post('/users', checkPermission('USER_CREATE'), userCtrl.createUser);
+router.post('/users', checkPermission('USER_CREATE'), userCtrl.createUser);     // max-user check inside controller
 router.put('/users/:id', checkPermission('USER_EDIT'), userCtrl.updateUser);
 router.delete('/users/:id', checkPermission('USER_EDIT'), userCtrl.deleteUser);
 router.post('/users/:id/role', checkPermission('ROLE_MANAGE'), userCtrl.assignRole);
@@ -56,11 +57,11 @@ router.get('/families', checkPermission('FAMILY_VIEW'), familyCtrl.listFamilies)
 router.post('/families', checkPermission('FAMILY_CREATE'), familyCtrl.createFamily);
 router.get('/families/:id', checkPermission('FAMILY_VIEW'), familyCtrl.getFamily);
 router.put('/families/:id', checkPermission('FAMILY_EDIT'), familyCtrl.updateFamily);
-router.delete('/families/:id', checkPermission('FAMILY_DELETE'), familyCtrl.deleteFamily);
+router.delete('/families/:id', checkPermission('FAMILY_DELETE'), checkPlan('family_delete'), familyCtrl.deleteFamily);
 router.get('/families/:id/members', checkPermission('FAMILY_VIEW'), familyCtrl.listMembers);
 router.post('/families/:id/members', checkPermission('FAMILY_CREATE'), familyCtrl.addMember);
 router.put('/members/:id', checkPermission('FAMILY_EDIT'), familyCtrl.updateMember);
-router.delete('/members/:id', checkPermission('FAMILY_DELETE'), familyCtrl.deleteMember);
+router.delete('/members/:id', checkPermission('FAMILY_DELETE'), checkPlan('family_delete'), familyCtrl.deleteMember);
 
 // Tax
 router.get('/tax', checkPermission('TAX_VIEW'), taxCtrl.listTax);
@@ -69,12 +70,12 @@ router.get('/tax/receipt/:id', checkPermission('TAX_VIEW'), taxCtrl.getReceipt);
 router.get('/tax/dues', checkPermission('TAX_VIEW'), taxCtrl.getDues);
 router.get('/tax/summary', checkPermission('TAX_VIEW'), taxCtrl.getTaxSummary);
 
-// Expenses
-router.get('/expenses', checkPermission('EXPENSE_VIEW'), expenseCtrl.listExpenses);
-router.post('/expenses', checkPermission('EXPENSE_CREATE'), upload.single('bill'), expenseCtrl.createExpense);
-router.put('/expenses/:id/approve', checkPermission('EXPENSE_APPROVE'), expenseCtrl.approveExpense);
-router.put('/expenses/:id/reject', checkPermission('EXPENSE_APPROVE'), expenseCtrl.rejectExpense);
-router.get('/expenses/:id/bill', checkPermission('EXPENSE_VIEW'), expenseCtrl.getBillUrl);
+// Expenses — Standard & Premium only
+router.get('/expenses', checkPermission('EXPENSE_VIEW'), checkPlan('expenses'), expenseCtrl.listExpenses);
+router.post('/expenses', checkPermission('EXPENSE_CREATE'), checkPlan('expenses'), checkPlan('file_uploads'), upload.single('bill'), expenseCtrl.createExpense);
+router.put('/expenses/:id/approve', checkPermission('EXPENSE_APPROVE'), checkPlan('expenses'), expenseCtrl.approveExpense);
+router.put('/expenses/:id/reject', checkPermission('EXPENSE_APPROVE'), checkPlan('expenses'), expenseCtrl.rejectExpense);
+router.get('/expenses/:id/bill', checkPermission('EXPENSE_VIEW'), checkPlan('expenses'), expenseCtrl.getBillUrl);
 
 // Audit
 router.get('/audit', checkPermission('AUDIT_VIEW'), auditCtrl.listAudit);

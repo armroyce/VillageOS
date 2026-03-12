@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { success, error } = require('../utils/response');
+const { FREE_MAX_USERS } = require('../config/planFeatures');
 
 async function listUsers(req, res) {
   try {
@@ -16,6 +17,15 @@ async function createUser(req, res) {
     const { User } = req.models;
     const { name, email, password, role_id } = req.body;
     if (!name || !email || !password) return error(res, 'name, email, password required', 400, 'VALIDATION_ERROR');
+
+    // Free plan: max 1 active user
+    if (req.plan === 'free') {
+      const count = await User.count({ where: { is_active: true } });
+      if (count >= FREE_MAX_USERS) {
+        return error(res, `Free plan allows a maximum of ${FREE_MAX_USERS} user. Upgrade to Standard or higher to add more users.`, 403, 'PLAN_RESTRICTED');
+      }
+    }
+
     const existing = await User.findOne({ where: { email } });
     if (existing) return error(res, 'Email already exists', 409, 'DUPLICATE');
     const password_hash = await bcrypt.hash(password, 12);
