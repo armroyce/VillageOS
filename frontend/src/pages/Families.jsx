@@ -30,6 +30,12 @@ export default function Families() {
   useEffect(() => { load(); }, [search, ward]);
 
   const columns = [
+    {
+      key: 'family_name', label: 'Family Name',
+      render: (row) => row.family_name
+        ? <span>{row.family_name}</span>
+        : <span className="text-slate-400">—</span>,
+    },
     { key: 'family_head_name', label: t('family_head') },
     { key: 'ward_number', label: t('ward') },
     { key: 'phone_number', label: 'Phone', render: (row) => row.phone_number || '—' },

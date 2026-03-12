@@ -20,12 +20,16 @@ export default function FamilyDetail() {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{family.family_head_name}</h1>
+        <div>
+          {family.family_name && <p className="text-sm text-slate-500 mb-0.5">{family.family_name}</p>}
+          <h1 className="text-2xl font-bold">{family.family_head_name}</h1>
+        </div>
         <Link to="/families" className="text-sm text-slate-500 hover:underline">← Back</Link>
       </div>
 
       <div className="card">
         <div className="grid grid-cols-2 gap-4 text-sm">
+          <div><span className="text-slate-500">Family Name</span><p className="font-medium">{family.family_name || '—'}</p></div>
           <div><span className="text-slate-500">{t('ward')}</span><p className="font-medium">{family.ward_number || '—'}</p></div>
           <div><span className="text-slate-500">{t('address')}</span><p className="font-medium">{family.address || '—'}</p></div>
           <div><span className="text-slate-500">Phone</span><p className="font-medium">{family.phone_number || '—'}</p></div>

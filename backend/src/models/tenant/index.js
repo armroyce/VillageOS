@@ -25,6 +25,7 @@ function defineTenantModels(sequelize) {
 
   const Family = sequelize.define('Family', {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    family_name: { type: DataTypes.STRING },
     family_head_name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.TEXT },
     ward_number: { type: DataTypes.STRING },

@@ -131,7 +131,7 @@ function AssignTaxForm({ onDone }) {
             {families.map((f) => (
               <label key={f.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" checked={form.family_ids.includes(f.id)} onChange={() => toggleFamily(f.id)} />
-                <span className="flex-1">{f.family_head_name}</span>
+                <span className="flex-1">{f.family_name ? `${f.family_name} — ` : ''}{f.family_head_name}</span>
                 <span className="text-slate-400">Ward {f.ward_number || '—'}</span>
               </label>
             ))}
@@ -190,7 +190,10 @@ function AssignmentStatusModal({ assignment, onClose }) {
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id} className={`border-b ${r.status === 'pending' ? 'bg-red-50' : ''}`}>
-                    <td className="px-4 py-2">{r.family?.family_head_name || '—'}</td>
+                    <td className="px-4 py-2">
+                      {r.family?.family_name && <span className="text-xs text-slate-400 block">{r.family.family_name}</span>}
+                      {r.family?.family_head_name || '—'}
+                    </td>
                     <td className="px-4 py-2 text-slate-500">{r.family?.ward_number || '—'}</td>
                     <td className="px-4 py-2 text-slate-500">{r.family?.phone_number || '—'}</td>
                     <td className="px-4 py-2">
@@ -243,7 +246,9 @@ export default function Tax() {
   useEffect(() => { load(); }, []);
 
   const columns = [
-    { key: 'family', label: 'Family', render: (r) => r.family?.family_head_name || '—' },
+    { key: 'family', label: 'Family', render: (r) => r.family ? (
+      <span>{r.family.family_name ? <span className="text-xs text-slate-400 mr-1">{r.family.family_name} —</span> : null}{r.family.family_head_name}</span>
+    ) : '—' },
     { key: 'description', label: 'Description', render: (r) => r.description || '—' },
     { key: 'type', label: t('type'), render: (r) => <span className={r.type === 'house_tax' ? 'badge-green' : 'badge-yellow'}>{t(r.type)}</span> },
     { key: 'amount', label: t('amount'), render: (r) => `₹${parseFloat(r.amount).toFixed(0)}` },
@@ -253,6 +258,7 @@ export default function Tax() {
   ];
 
   const dueColumns = [
+    { key: 'family_name', label: 'Family Name', render: (r) => r.family_name || '—' },
     { key: 'family_head_name', label: t('family_head') },
     { key: 'ward_number', label: t('ward') },
     { key: 'phone_number', label: 'Phone', render: (r) => r.phone_number || '—' },

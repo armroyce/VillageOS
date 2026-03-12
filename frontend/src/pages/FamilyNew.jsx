@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 export default function FamilyNew() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ family_head_name: '', address: '', ward_number: '', phone_number: '' });
+  const [form, setForm] = useState({ family_name: '', family_head_name: '', address: '', ward_number: '', phone_number: '' });
   const [errors, setErrors] = useState({});
 
   async function handleSubmit(e) {
@@ -28,7 +28,11 @@ export default function FamilyNew() {
       <div className="card">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">{t('family_head')}</label>
+            <label className="block text-sm font-medium mb-1">Family Name <span className="text-slate-400 font-normal">(e.g. Sharma Family)</span></label>
+            <input className="input" placeholder="e.g. Sharma Family" value={form.family_name} onChange={(e) => setForm({ ...form, family_name: e.target.value })} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">{t('family_head')} *</label>
             <input className="input" value={form.family_head_name} onChange={(e) => setForm({ ...form, family_head_name: e.target.value })} />
             {errors.family_head_name && <p className="text-red-500 text-xs mt-1">{errors.family_head_name}</p>}
           </div>

@@ -86,7 +86,7 @@ export default function TaxCollect() {
               <option value="">— Select Family —</option>
               {families.map((f) => (
                 <option key={f.id} value={f.id}>
-                  {f.family_head_name} {f.ward_number ? `(Ward ${f.ward_number})` : ''}
+                  {f.family_name ? `${f.family_name} — ` : ''}{f.family_head_name}{f.ward_number ? ` (Ward ${f.ward_number})` : ''}
                 </option>
               ))}
             </select>

@@ -7,7 +7,10 @@ async function listFamilies(req, res) {
     const { page = 1, limit = 20, search, ward } = req.query;
     const offset = (page - 1) * limit;
     const where = {};
-    if (search) where.family_head_name = { [Op.iLike]: `%${search}%` };
+    if (search) where[Op.or] = [
+      { family_head_name: { [Op.iLike]: `%${search}%` } },
+      { family_name: { [Op.iLike]: `%${search}%` } },
+    ];
     if (ward) where.ward_number = ward;
     const { count, rows } = await Family.findAndCountAll({
       where,
@@ -36,9 +39,9 @@ async function listFamilies(req, res) {
 async function createFamily(req, res) {
   try {
     const { Family } = req.models;
-    const { family_head_name, address, ward_number, phone_number } = req.body;
+    const { family_name, family_head_name, address, ward_number, phone_number } = req.body;
     if (!family_head_name) return error(res, 'family_head_name required', 400, 'VALIDATION_ERROR');
-    const family = await Family.create({ family_head_name, address, ward_number, phone_number, created_by: req.user.user_id });
+    const family = await Family.create({ family_name, family_head_name, address, ward_number, phone_number, created_by: req.user.user_id });
     return success(res, family, 'Family created', 201);
   } catch (err) {
     return error(res, err.message);
