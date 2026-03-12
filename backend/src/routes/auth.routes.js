@@ -4,6 +4,7 @@ const ctrl = require('../controllers/auth.controller');
 const verifyJWT = require('../middleware/verifyJWT');
 
 router.post('/super-admin/login', ctrl.superAdminLogin);
+router.post('/super-admin/change-password', verifyJWT, ctrl.superAdminChangePassword);
 router.post('/login', ctrl.villageLogin);
 router.post('/logout', verifyJWT, ctrl.logout);
 router.get('/me', verifyJWT, ctrl.me);

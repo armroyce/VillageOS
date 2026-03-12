@@ -20,12 +20,14 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import SuperDashboard from './pages/super/SuperDashboard';
 import SuperVillages from './pages/super/SuperVillages';
+import SuperSettings from './pages/super/SuperSettings';
 
 function ProtectedRoute({ children, superOnly = false }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-400">Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (superOnly && !user.is_super_admin) return <Navigate to="/dashboard" replace />;
+  if (!user) return <Navigate to={superOnly ? '/super/login' : '/login'} replace />;
+  if (superOnly && !user.is_super_admin) return <Navigate to="/login" replace />;
+  if (!superOnly && user.is_super_admin) return <Navigate to="/super/dashboard" replace />;
   return children;
 }
 
@@ -71,6 +73,7 @@ function AppRoutes() {
       {/* Super admin routes */}
       <Route path="/super/dashboard" element={<SuperLayout><SuperDashboard /></SuperLayout>} />
       <Route path="/super/villages" element={<SuperLayout><SuperVillages /></SuperLayout>} />
+      <Route path="/super/settings" element={<SuperLayout><SuperSettings /></SuperLayout>} />
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to={user ? (user.is_super_admin ? '/super/dashboard' : '/dashboard') : '/login'} replace />} />

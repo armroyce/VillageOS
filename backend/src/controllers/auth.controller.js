@@ -30,7 +30,7 @@ async function superAdminLogin(req, res) {
     const token = signToken({ user_id: admin.id, email: admin.email, is_super_admin: true, is_root: admin.is_root });
     const refreshToken = signRefreshToken({ user_id: admin.id, is_super_admin: true });
 
-    return success(res, { token, refreshToken, user: { id: admin.id, name: admin.name, email: admin.email, is_root: admin.is_root } }, 'Login successful');
+    return success(res, { token, refreshToken, user: { id: admin.id, name: admin.name, email: admin.email, is_super_admin: true, is_root: admin.is_root } }, 'Login successful');
   } catch (err) {
     return error(res, err.message);
   }
@@ -90,6 +90,24 @@ async function villageLogin(req, res) {
   }
 }
 
+// POST /api/v1/auth/super-admin/change-password
+async function superAdminChangePassword(req, res) {
+  try {
+    if (!req.user?.is_super_admin) return error(res, 'Not authorized', 403, 'FORBIDDEN');
+    const { current_password, new_password } = req.body;
+    if (!current_password || !new_password) return error(res, 'current_password and new_password required', 400, 'VALIDATION_ERROR');
+    const admin = await SuperAdmin.findByPk(req.user.user_id);
+    if (!admin) return error(res, 'Admin not found', 404, 'NOT_FOUND');
+    const valid = await bcrypt.compare(current_password, admin.password_hash);
+    if (!valid) return error(res, 'Current password is incorrect', 401, 'INVALID_CREDENTIALS');
+    const hash = await bcrypt.hash(new_password, 12);
+    await admin.update({ password_hash: hash });
+    return success(res, {}, 'Password changed successfully');
+  } catch (err) {
+    return error(res, err.message);
+  }
+}
+
 // POST /api/v1/auth/logout
 async function logout(req, res) {
   // Stateless JWT — instruct client to discard token
@@ -101,4 +119,4 @@ async function me(req, res) {
   return success(res, { user: req.user });
 }
 
-module.exports = { superAdminLogin, villageLogin, logout, me };
+module.exports = { superAdminLogin, superAdminChangePassword, villageLogin, logout, me };

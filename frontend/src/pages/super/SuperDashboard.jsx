@@ -7,9 +7,12 @@ export default function SuperDashboard() {
   const { t } = useTranslation();
   const [villages, setVillages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.get('/super/villages').then((res) => { setVillages(res.data.data); setLoading(false); });
+    api.get('/super/villages')
+      .then((res) => { setVillages(res.data.data || []); setLoading(false); })
+      .catch((err) => { setError(err.response?.data?.error?.message || 'Failed to load villages'); setLoading(false); });
   }, []);
 
   return (
@@ -35,7 +38,13 @@ export default function SuperDashboard() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">{t('villages')}</h2>
-        {loading ? <p className="text-slate-400">{t('loading')}</p> : (
+        {loading ? (
+          <p className="text-slate-400 py-4 text-center">{t('loading')}</p>
+        ) : error ? (
+          <p className="text-red-500 py-4 text-center">{error}</p>
+        ) : villages.length === 0 ? (
+          <p className="text-slate-400 py-4 text-center">No villages found. Create your first village →</p>
+        ) : (
           <table className="w-full text-sm">
             <thead><tr className="border-b">
               <th className="text-left py-2 font-medium text-slate-600">Name</th>
@@ -46,8 +55,8 @@ export default function SuperDashboard() {
             <tbody>
               {villages.map((v) => (
                 <tr key={v.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="py-2">{v.name}</td>
-                  <td className="py-2 font-mono text-xs">{v.subdomain}</td>
+                  <td className="py-2 font-medium">{v.name}</td>
+                  <td className="py-2 font-mono text-xs text-slate-500">{v.subdomain}</td>
                   <td className="py-2"><span className="badge-green">{v.subscription?.plan || 'free'}</span></td>
                   <td className="py-2">{v.is_active ? <span className="badge-green">Active</span> : <span className="badge-red">Inactive</span>}</td>
                 </tr>

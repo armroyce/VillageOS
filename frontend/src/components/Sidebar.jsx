@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const navItems = [
+const villageNavItems = [
   { key: 'dashboard', path: '/dashboard', perm: null, icon: '🏠' },
   { key: 'families', path: '/families', perm: 'FAMILY_VIEW', icon: '👨‍👩‍👧' },
   { key: 'tax', path: '/tax', perm: 'TAX_VIEW', icon: '💰' },
@@ -15,6 +15,12 @@ const navItems = [
   { key: 'settings', path: '/settings', perm: null, icon: '⚙️' },
 ];
 
+const superNavItems = [
+  { key: 'dashboard', path: '/super/dashboard', perm: null, icon: '🏠' },
+  { key: 'villages', path: '/super/villages', perm: null, icon: '🌳' },
+  { key: 'settings', path: '/super/settings', perm: null, icon: '⚙️' },
+];
+
 export default function Sidebar() {
   const { t, i18n } = useTranslation();
   const { user, village, hasPermission, logout } = useAuth();
@@ -22,10 +28,11 @@ export default function Sidebar() {
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate(user?.is_super_admin ? '/super/login' : '/login');
     toast.success('Logged out');
   }
 
+  const navItems = user?.is_super_admin ? superNavItems : villageNavItems;
   const visibleItems = navItems.filter((item) => !item.perm || hasPermission(item.perm));
 
   return (

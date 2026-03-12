@@ -16,8 +16,10 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const isSuperAdmin = user?.is_super_admin;
       localStorage.clear();
-      window.location.href = '/login';
+      window.location.href = isSuperAdmin ? '/super/login' : '/login';
     }
     return Promise.reject(err);
   }
