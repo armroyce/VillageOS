@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: villageos-api
+    env: node
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: CONTROL_DB_URL
+        sync: false
+      - key: TENANT_DB_VILLAGE_01
+        sync: false
+      - key: TENANT_DB_VILLAGE_02
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: AES_SECRET_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://villageos.netlify.app
+      - key: FRONTEND_URL_PROD
+        value: https://villageos.netlify.app
