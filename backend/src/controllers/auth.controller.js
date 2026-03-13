@@ -119,4 +119,18 @@ async function me(req, res) {
   return success(res, { user: req.user });
 }
 
-module.exports = { superAdminLogin, superAdminChangePassword, villageLogin, logout, me };
+// GET /api/v1/auth/villages  (public — for login page dropdown)
+async function listVillages(req, res) {
+  try {
+    const villages = await Village.findAll({
+      where: { is_active: true },
+      attributes: ['id', 'name', 'subdomain'],
+      order: [['name', 'ASC']],
+    });
+    return success(res, villages);
+  } catch (err) {
+    return error(res, err.message);
+  }
+}
+
+module.exports = { superAdminLogin, superAdminChangePassword, villageLogin, logout, me, listVillages };

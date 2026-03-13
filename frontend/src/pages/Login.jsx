@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -11,12 +12,17 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '', village_id: '' });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [villages, setVillages] = useState([]);
+
+  useEffect(() => {
+    api.get('/auth/villages').then((res) => setVillages(res.data.data || [])).catch(() => {});
+  }, []);
 
   function validate() {
     const e = {};
     if (!form.email) e.email = 'Email required';
     if (!form.password) e.password = 'Password required';
-    if (!form.village_id) e.village_id = 'Village ID required';
+    if (!form.village_id) e.village_id = 'Village required';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -47,13 +53,16 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('village_id')}</label>
-              <input
-                type="text"
+              <select
                 className="input"
-                placeholder="village-01"
                 value={form.village_id}
                 onChange={(e) => setForm({ ...form, village_id: e.target.value })}
-              />
+              >
+                <option value="">— Select Village —</option>
+                {villages.map((v) => (
+                  <option key={v.id} value={v.subdomain}>{v.name}</option>
+                ))}
+              </select>
               {errors.village_id && <p className="text-red-500 text-xs mt-1">{errors.village_id}</p>}
             </div>
             <div>
